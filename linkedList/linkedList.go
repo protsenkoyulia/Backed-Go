@@ -14,28 +14,28 @@ type LinkedList struct { //связный список
 }
 
 func New(len int) *LinkedList { // инициализация
-	if len != 0 {
-		list := LinkedList{
-			Head: &node{
-				value: 0,
-				next:  nil,
-			},
-		}
-		var cur = list.Head
-		for i := 1; i < len; i++ {
-			cur.next = &node{
-				value: 0,
-				next:  nil,
-			}
-			cur = cur.next
-		}
-		return &list
-	} else {
+	if len == 0 {
 		list := LinkedList{
 			Head: nil,
 		}
 		return &list
 	}
+	list := LinkedList{
+		Head: &node{
+			value: 0,
+			next:  nil,
+		},
+	}
+	var cur = list.Head
+	for i := 1; i < len; i++ {
+		cur.next = &node{
+			value: 0,
+			next:  nil,
+		}
+		cur = cur.next
+	}
+	return &list
+
 }
 
 func (list LinkedList) Output() { // вывод списка в консоль
@@ -55,27 +55,32 @@ func (list *LinkedList) Add(val int) { // добавление нового эл
 		value: val,
 		next:  nil,
 	}
+
 	cur := list.Head
-	if cur != nil {
-		for cur.next != nil {
-			cur = cur.next
-		}
-		cur.next = temp
-	} else {
+	if cur == nil {
 		list.Head = temp
+		return
 	}
+
+	for cur.next != nil {
+		cur = cur.next
+	}
+	cur.next = temp
 }
 
 func (list *LinkedList) Pop() { // удаление значения из конца
 	cur := list.Head
-	if cur != nil && cur.next != nil {
-		for cur.next.next != nil {
-			cur = cur.next
-		}
-		cur.next = nil
+	if cur == nil { // если список пустой
+		return
 	} else if cur.next == nil { // только 1 элемент в списке
 		list.Head = nil
+		return
 	}
+
+	for cur.next.next != nil {
+		cur = cur.next
+	}
+	cur.next = nil
 }
 
 func (list LinkedList) Size() int { // возвращает размерность списка
@@ -92,26 +97,27 @@ func (list *LinkedList) DeleteFrom(pos int) { // удаление элемент
 
 	cur := list.Head
 	switch {
-	case pos == 0:
-		if cur != nil {
-			list.Head = cur.next
-		}
+	case pos == 0 && cur != nil:
+		list.Head = cur.next
+		return
 	case pos == list.Size():
 		list.Pop()
+		return
 	case pos < 0 || pos > list.Size():
 		fmt.Println("Wrong position")
 		return
-	default:
-		for i := 0; i < pos-1; i++ { //доходим до элемента, стоящего перед удаляемым
-			cur = cur.next
-		}
-		temp := cur.next
-		cur.next = temp.next
 	}
+
+	for i := 0; i < pos-1; i++ { //доходим до элемента, стоящего перед удаляемым
+		cur = cur.next
+	}
+	temp := cur.next
+	cur.next = temp.next
 
 }
 
 func (list *LinkedList) AddAt(pos int, val int) { // добавление нового элемента на позицию pos
+
 	temp := &node{
 		value: val,
 		next:  nil,
@@ -122,18 +128,20 @@ func (list *LinkedList) AddAt(pos int, val int) { // добавление нов
 	case pos == 0:
 		temp.next = list.Head
 		list.Head = temp
+		return
 	case pos == list.Size():
 		list.Add(val)
+		return
 	case pos < 0 || pos > list.Size():
 		fmt.Println("Wrong position")
 		return
-	default:
-		for i := 0; i < pos-1; i++ {
-			cur = cur.next
-		}
-		temp.next = cur.next
-		cur.next = temp
 	}
+
+	for i := 0; i < pos-1; i++ {
+		cur = cur.next
+	}
+	temp.next = cur.next
+	cur.next = temp
 }
 
 func (list *LinkedList) UpdateAt(pos int, val int) { // оюновление значения на позиции pos
